@@ -3652,3 +3652,149 @@ function scrollToSection(id) { const el=document.getElementById(id); if(el) el.s
     'quickbar.top':'Top'
   });
 })();
+
+// ===============================
+// ALLVE - MINIMIZAR LISTA / MODO COMPACTO / LIMPAR FILTROS
+// Cole este código no FINAL do script.js
+// ===============================
+
+let listaMinimizada = localStorage.getItem("allve_lista_minimizada") === "sim";
+let modoCompacto = localStorage.getItem("allve_modo_compacto") === "sim";
+
+function pegarGridRestaurantes() {
+  return (
+    document.querySelector(".restaurant-grid") ||
+    document.querySelector("#restaurant-grid") ||
+    document.querySelector("#restaurants-grid")
+  );
+}
+
+function atualizarBotoesAllve() {
+  const grid = pegarGridRestaurantes();
+
+  const btnMinimizar = document.querySelector("#btnToggleRestaurants");
+  const btnCompacto = document.querySelector("#btnCompactMode");
+  const mensagem = document.querySelector("#allveCollapsedMessage");
+
+  if (!grid) return;
+
+  if (listaMinimizada) {
+    grid.classList.add("allve-is-minimized");
+
+    if (btnMinimizar) {
+      btnMinimizar.textContent = "Mostrar lista";
+    }
+
+    if (mensagem) {
+      mensagem.classList.remove("hidden");
+    }
+  } else {
+    grid.classList.remove("allve-is-minimized");
+
+    if (btnMinimizar) {
+      btnMinimizar.textContent = "Minimizar lista";
+    }
+
+    if (mensagem) {
+      mensagem.classList.add("hidden");
+    }
+  }
+
+  if (modoCompacto) {
+    grid.classList.add("allve-compact");
+
+    if (btnCompacto) {
+      btnCompacto.textContent = "Modo normal";
+    }
+  } else {
+    grid.classList.remove("allve-compact");
+
+    if (btnCompacto) {
+      btnCompacto.textContent = "Modo compacto";
+    }
+  }
+}
+
+function configurarBotoesAllve() {
+  const btnMinimizar = document.querySelector("#btnToggleRestaurants");
+  const btnCompacto = document.querySelector("#btnCompactMode");
+  const btnLimpar = document.querySelector("#btnClearFilters");
+
+  if (btnMinimizar) {
+    btnMinimizar.addEventListener("click", function () {
+      listaMinimizada = !listaMinimizada;
+
+      localStorage.setItem(
+        "allve_lista_minimizada",
+        listaMinimizada ? "sim" : "nao"
+      );
+
+      atualizarBotoesAllve();
+    });
+  }
+
+  if (btnCompacto) {
+    btnCompacto.addEventListener("click", function () {
+      modoCompacto = !modoCompacto;
+
+      localStorage.setItem(
+        "allve_modo_compacto",
+        modoCompacto ? "sim" : "nao"
+      );
+
+      atualizarBotoesAllve();
+    });
+  }
+
+  if (btnLimpar) {
+    btnLimpar.addEventListener("click", function () {
+      const campoBusca =
+        document.querySelector(".search-input") ||
+        document.querySelector("#search-input") ||
+        document.querySelector("#searchInput");
+
+      if (campoBusca) {
+        campoBusca.value = "";
+        campoBusca.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+
+      document.querySelectorAll(".chip.active, .map-chip.active").forEach(function (chip) {
+        chip.classList.remove("active");
+      });
+
+      const primeiroFiltro =
+        document.querySelector(".chip[data-category='all']") ||
+        document.querySelector(".chip[data-filter='all']") ||
+        document.querySelector(".chip");
+
+      if (primeiroFiltro) {
+        primeiroFiltro.classList.add("active");
+      }
+
+      if (typeof renderRestaurants === "function") {
+        renderRestaurants();
+      }
+
+      if (typeof filterRestaurants === "function") {
+        filterRestaurants();
+      }
+    });
+  }
+
+  atualizarBotoesAllve();
+}
+
+function allveScrollTo(selector) {
+  const elemento = document.querySelector(selector);
+
+  if (elemento) {
+    elemento.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  configurarBotoesAllve();
+});

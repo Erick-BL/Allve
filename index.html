@@ -218,7 +218,30 @@
     </div>
   </div>
   <div class="active-filter-summary" id="active-filter-summary"></div>
-  <div class="restaurant-grid" id="restaurant-grid"></div>
+  <!-- CONTROLES MOBILE / LISTA DE RESTAURANTES -->
+<div class="allve-mobile-controls">
+  <button id="btnToggleRestaurants" class="allve-control-btn" type="button">
+    Minimizar lista
+  </button>
+
+  <button id="btnCompactMode" class="allve-control-btn" type="button">
+    Modo compacto
+  </button>
+
+  <button id="btnClearFilters" class="allve-control-btn secondary" type="button">
+    Limpar filtros
+  </button>
+</div>
+
+<div id="allveActiveFilters" class="allve-active-filters">
+  Mostrando todos os locais
+</div>
+
+<div id="allveCollapsedMessage" class="allve-collapsed-message hidden">
+  <strong>Lista minimizada</strong>
+  <p>Toque em “Mostrar lista” para ver os restaurantes novamente.</p>
+</div>
+ <div class="restaurant-grid" id="restaurant-grid"></div>
 </div>
 
 <!-- IMPACT DASHBOARD -->
@@ -553,6 +576,13 @@
   <button onclick="scrollToSection('discover')">✨ <span data-i18n="quickbar.discover">Descobrir</span></button>
   <button onclick="scrollToSection('home')">⬆️ <span data-i18n="quickbar.top">Topo</span></button>
 </div>
+<!-- BARRA INFERIOR MOBILE -->
+<nav class="allve-bottom-nav">
+  <button type="button" onclick="allveScrollTo('#restaurants')">Lista</button>
+  <button type="button" onclick="allveScrollTo('#mapa, #map, #delivery-map')">Mapa</button>
+  <button type="button" onclick="allveScrollTo('#discover, #descobrir')">Descobrir</button>
+  <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})">Topo</button>
+</nav>
 
 </body>
 </html>
