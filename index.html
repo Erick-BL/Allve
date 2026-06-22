@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a3d1f" />
+  <meta name="description" content="Allve One: guia vegano e vegetariano com 28 locais de Uberlândia, todos com 2 ou mais opções veganas/vegetarianas, mapa inteligente, favoritos e pedidos." />
+  <title>Allve One – Guia vegano e vegetariano de Uberlândia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,800;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="site-header">
+  <nav class="nav">
+    <a href="#" class="logo" aria-label="Allve">
+      <svg class="logo-leaf" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2 5-4 12-2 12-2S19 6 17 8Z"/>
+      </svg>
+      Allve
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home" class="active" data-i18n="nav.home">Início</a></li>
+      <li><a href="#restaurants" data-i18n="nav.restaurants">Restaurantes</a></li>
+      <li><a href="#discover" data-i18n="footer.discover">Descobrir</a></li>
+      <li><a href="#impact" data-i18n="footer.impact">Impacto</a></li>
+      <li><a href="#map" data-i18n="nav.map">Mapa</a></li>
+      <li><a href="#how" data-i18n="nav.how">Como funciona</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="lang-pt" onclick="setLang('pt')">PT</button>
+        <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="nav-icon-btn" onclick="openCart()" title="Carrinho">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25.03-.12.9-1.63H17c.75 0 1.41-.41 1.75-1.03L21.7 6.96A1 1 0 0 0 21 5.5H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.97 5.48 17 6.75 17H19v-2H7.42c-.14 0-.25-.11-.25-.25z"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+      <button class="nav-icon-btn" onclick="openSettings()" title="Configurações">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </button>
+      <div id="nav-user-area">
+        <button class="btn btn-outline" onclick="openAuth('login')" data-i18n="nav.login">Entrar</button>
+        <button class="btn btn-primary" onclick="openAuth('register')" data-i18n="nav.signup">Cadastrar</button>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-leaves" aria-hidden="true">
+    <svg class="leaf-svg" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="leaf-svg" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="leaf-svg" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="leaf-svg" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="leaf-svg" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge" data-i18n-badge>
+        <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2 5-4 12-2 12-2S19 6 17 8Z"/></svg>
+        <span data-i18n="hero.badge">Vegano & Vegetariano • Uberlândia</span>
+      </div>
+      <h1 data-i18n="hero.title">Tudo <em>vegano e vegetariano,</em><br>tudo aqui.</h1>
+      <p data-i18n="hero.subtitle">Descubra restaurantes, docerias e deliveries com opções veganas e vegetarianas em Uberlândia, com cardápios separados e informações claras.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-hero-primary" onclick="scrollToSection('restaurants')" data-i18n="hero.cta1">
+          <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2 5-4 12-2 12-2S19 6 17 8Z"/></svg>
+          Ver Restaurantes
+        </button>
+        <button class="btn btn-hero-secondary" onclick="scrollToSection('discover')" data-i18n="hero.cta2">Descobrir meu pedido →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong id="hero-total-count">28</strong><span data-i18n="hero.stat1">Locais</span></div>
+        <div class="hero-stat"><strong>4.8★</strong><span data-i18n="hero.stat2">Avaliação média</span></div>
+        <div class="hero-stat"><strong>20min</strong><span data-i18n="hero.stat3">Entrega média</span></div>
+      </div>
+    </div>
+    <div class="hero-cards" aria-hidden="true">
+      <div class="hero-card">
+        <div class="hcard-head"><div class="hcard-icon">🌱</div><div><div class="hcard-title">Verde Vida</div><div class="hcard-sub">★ 4.9 · 20-30 min</div></div></div>
+        <div class="hcard-meta"><span class="hcard-pill" data-i18n="heroCard.open">Aberto agora</span><span class="hcard-pill" data-i18n="heroCard.freeDelivery">Entrega R$0</span></div>
+      </div>
+      <div class="hero-card">
+        <div class="hcard-head"><div class="hcard-icon">🍕</div><div><div class="hcard-title">Pizza Plant</div><div class="hcard-sub">★ 4.6 · 30-45 min</div></div></div>
+        <div class="hcard-meta"><span class="hcard-pill" data-i18n="heroCard.mostOrdered">Mais pedido</span><span class="hcard-pill" data-i18n="heroCard.discount">–20% hoje</span></div>
+      </div>
+      <div class="hero-card">
+        <div class="hcard-head"><div class="hcard-icon">🥗</div><div><div class="hcard-title">Raízes</div><div class="hcard-sub">★ 4.9 · 15-25 min</div></div></div>
+        <div class="hcard-meta"><span class="hcard-pill" data-i18n="heroCard.fast">Super rápido</span><span class="hcard-pill" data-i18n="heroCard.new">Novo!</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALLVE ONE STRIP -->
+<section class="premium-strip" id="allve-one">
+  <div class="premium-leaves" aria-hidden="true">
+    <svg class="premium-leaf" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="premium-leaf" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="premium-leaf" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+    <svg class="premium-leaf" viewBox="0 0 80 80"><path fill="white" d="M40 5C20 5 5 25 5 40c15 0 30-8 40-20 5 10 5 25-5 40 20-5 35-25 35-45C75 15 60 5 40 5Z"/></svg>
+  </div>
+  <div class="premium-strip-inner">
+    <div>
+      <div class="premium-eyebrow">🌍 Allve One</div>
+      <h2 class="premium-title" data-i18n="premium.title">Um guia vegano e vegetariano com cara de iFood, mapa inteligente e só locais com 2+ opções corretas.</h2>
+      <p class="premium-text" data-i18n="premium.text">Agora o Allve só mostra locais de Uberlândia que têm pelo menos 2 pratos veganos/vegetarianos, separa cada item por selo e evita colocar prato duvidoso no cardápio.</p>
+      <div class="premium-actions">
+        <button class="premium-btn main" onclick="scrollToSection('discover')">✨ <span data-i18n="premium.discover">Descobrir meu pedido</span></button>
+        <button class="premium-btn ghost" onclick="scrollToSection('map')">🗺️ <span data-i18n="premium.map">Explorar mapa</span></button>
+      </div>
+    </div>
+    <div class="premium-panel">
+      <div class="premium-mini-grid">
+        <div class="premium-mini"><strong id="premium-open-count">0</strong><span data-i18n="premium.openNow">Abertos agora</span></div>
+        <div class="premium-mini"><strong id="premium-free-count">0</strong><span data-i18n="premium.freeDelivery">Com entrega grátis</span></div>
+        <div class="premium-mini"><strong id="premium-total-count">28</strong><span data-i18n="premium.total">Locais mapeados</span></div>
+        <div class="premium-mini"><strong id="premium-fav-count">0</strong><span data-i18n="premium.favorites">Favoritos salvos</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH + FILTERS -->
+<div class="search-section" id="restaurants">
+  <div class="search-inner">
+    <div class="search-wrap">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Buscar restaurantes, pratos..." oninput="filterRestaurants()" />
+      </div>
+      <select class="select-styled" id="sort-select" onchange="filterRestaurants()" style="max-width:180px;">
+        <option value="rating" data-i18n="search.sortRating">Melhor avaliação</option>
+        <option value="time" data-i18n="search.sortTime">Mais rápido</option>
+        <option value="az" data-i18n="search.sortAZ">A–Z</option>
+      </select>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip active" data-cat="all" onclick="setCategory(this,'all')"><span>🍽️</span><span data-i18n="cat.all">Todos</span></div>
+      <div class="chip" data-cat="burger" onclick="setCategory(this,'burger')"><span>🍔</span><span data-i18n="cat.burger">Burgers</span></div>
+      <div class="chip" data-cat="pizza" onclick="setCategory(this,'pizza')"><span>🍕</span><span data-i18n="cat.pizza">Pizzas</span></div>
+      <div class="chip" data-cat="bowl" onclick="setCategory(this,'bowl')"><span>🥗</span><span data-i18n="cat.bowl">Bowls</span></div>
+      <div class="chip" data-cat="japanese" onclick="setCategory(this,'japanese')"><span>🍣</span><span data-i18n="cat.japanese">Japonesa</span></div>
+      <div class="chip" data-cat="dessert" onclick="setCategory(this,'dessert')"><span>🍰</span><span data-i18n="cat.dessert">Sobremesas</span></div>
+      <div class="chip" data-cat="juice" onclick="setCategory(this,'juice')"><span>🧃</span><span data-i18n="cat.juice">Sucos</span></div>
+    </div>
+
+    <div class="smart-filters" id="smart-filters">
+      <button class="smart-filter" data-filter="open" onclick="toggleSmartFilter(this,'open')">🟢 <span data-i18n="smart.open">Abertos agora</span></button>
+      <button class="smart-filter" data-filter="free" onclick="toggleSmartFilter(this,'free')">🛵 <span data-i18n="smart.free">Entrega grátis</span></button>
+      <button class="smart-filter" data-filter="fav" onclick="toggleSmartFilter(this,'fav')">❤️ <span data-i18n="smart.fav">Favoritos</span></button>
+      <button class="smart-filter" data-filter="cheap" onclick="toggleSmartFilter(this,'cheap')">💸 <span data-i18n="smart.cheap">Pedido econômico</span></button>
+      <button class="smart-filter" data-filter="eco" onclick="toggleSmartFilter(this,'eco')">🌱 <span data-i18n="smart.eco">Mais sustentável</span></button>
+      <button class="smart-filter" data-filter="vegan" onclick="toggleSmartFilter(this,'vegan')">✅ <span data-i18n="smart.vegan">Com prato vegano</span></button>
+      <button class="smart-filter" data-filter="vegetarian" onclick="toggleSmartFilter(this,'vegetarian')">🥬 <span data-i18n="smart.vegetarian">Vegetarianos</span></button>
+    </div>
+    <p class="premium-search-note" data-i18n="search.note">Dica: busque por “tofu”, “marmita”, “pizza”, “sobremesa”, bairro ou estilo de comida.</p>
+  </div>
+</div>
+
+
+<!-- DISCOVER MODE -->
+<section class="discover-section" id="discover">
+  <div class="discover-inner">
+    <div class="discover-card">
+      <div class="section-kicker" data-i18n="discover.kicker">Guia inteligente</div>
+      <h2 class="discover-title" data-i18n="discover.title">Não sabe o que pedir? O Allve escolhe com você.</h2>
+      <p class="discover-copy" data-i18n="discover.copy">Escolha seu momento e o app recomenda o restaurante e o prato com melhor combinação de tempo, preço, avaliação e estilo.</p>
+      <div class="mood-grid" id="mood-grid">
+        <button class="mood-btn active" onclick="setSmartPreference(this,'rapido')">⚡ <span data-i18n="mood.fast">Rápido</span> <small data-i18n="mood.fastSub">quero comer logo</small></button>
+        <button class="mood-btn" onclick="setSmartPreference(this,'barato')">💸 <span data-i18n="mood.cheap">Econômico</span> <small data-i18n="mood.cheapSub">bom e barato</small></button>
+        <button class="mood-btn" onclick="setSmartPreference(this,'saudavel')">🥗 <span data-i18n="mood.healthy">Saudável</span> <small data-i18n="mood.healthySub">leve e nutritivo</small></button>
+        <button class="mood-btn" onclick="setSmartPreference(this,'conforto')">🍕 <span data-i18n="mood.comfort">Conforto</span> <small data-i18n="mood.comfortSub">pizza, massa ou doce</small></button>
+      </div>
+      <button class="mini-action" onclick="generateRecommendation()" data-i18n="discover.generate">Gerar recomendação</button>
+    </div>
+    <div class="discover-card recommendation-panel">
+      <div class="section-kicker" data-i18n="discover.choice">Escolha do Allve</div>
+      <div class="recommendation-hero" id="recommendation-box">
+        <div class="rec-icon" style="background:linear-gradient(135deg,#16a34a,#84cc16)">🌱</div>
+        <div>
+          <div class="rec-label" data-i18n="rec.initial">Recomendação inicial</div>
+          <div class="rec-name" data-i18n="rec.loading">Carregando melhor opção...</div>
+          <p class="rec-desc" data-i18n="rec.defaultDesc">O app vai analisar restaurantes, cardápios, tempo e avaliação.</p>
+          <div class="rec-tags"><span class="rec-tag" data-i18n="rec.tagVeg">vegano/vegetariano</span><span class="rec-tag">Uberlândia</span></div>
+        </div>
+      </div>
+      <div class="rec-actions">
+        <button class="mini-action" onclick="openRecommendedMenu()" data-i18n="rec.viewMenu">Ver cardápio recomendado</button>
+        <button class="mini-action light" onclick="scrollToSection('restaurants')" data-i18n="rec.viewAll">Ver todos</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESTAURANT GRID -->
+<div class="main-layout">
+  <div class="section-header">
+    <h2 class="section-title" data-i18n="section.partners">Nossos <span>Parceiros</span></h2>
+    <div class="section-actions">
+      <span class="badge-green" id="results-count">28 locais</span>
+      <button class="compact-mode-btn" id="compact-mode-btn" onclick="toggleCompactCards()" data-i18n="restaurants.compact">Modo compacto</button>
+      <button class="collapse-restaurants-btn" id="restaurant-toggle-btn" onclick="toggleRestaurantSection()" data-i18n="restaurants.minimize">Minimizar lista</button>
+      <button class="clear-filters-btn" onclick="clearAllFilters()" data-i18n="filters.clear">Limpar filtros</button>
+    </div>
+  </div>
+  <div class="restaurant-collapsed-note hidden" id="restaurant-collapsed-note">
+    <div class="collapsed-icon">🍽️</div>
+    <div>
+      <strong data-i18n="restaurants.collapsed">Lista de restaurantes minimizada</strong>
+      <p data-i18n="restaurants.collapsedDesc">Clique em “Mostrar lista” para ver os cards novamente.</p>
+    </div>
+  </div>
+  <div class="active-filter-summary" id="active-filter-summary"></div>
+  <div class="restaurant-grid" id="restaurant-grid"></div>
+</div>
+
+<!-- IMPACT DASHBOARD -->
+<section id="impact" class="allve-dashboard">
+  <div class="impact-card">
+    <div class="impact-icon">🌱</div>
+    <h3 data-i18n="impact.title">Impacto positivo</h3>
+    <p data-i18n="impact.desc">Estimativa visual baseada nos seus pedidos no app.</p>
+    <div class="impact-big" id="impact-co2">0 kg</div>
+    <p data-i18n="impact.co2">CO₂ evitado em escolhas vegetais</p>
+    <div class="progress"><span id="impact-progress" style="width:12%"></span></div>
+  </div>
+  <div class="club-card">
+    <div class="impact-icon">🏆</div>
+    <h3 data-i18n="club.title">Allve Club</h3>
+    <p data-i18n="club.desc">Ganhe pontos a cada pedido e desbloqueie benefícios.</p>
+    <div class="impact-big" id="club-points">0 pts</div>
+    <p id="club-level">Nível Broto 🌿</p>
+    <div class="progress"><span id="club-progress" style="width:8%"></span></div>
+  </div>
+  <div class="impact-card">
+    <div class="impact-icon">🛡️</div>
+    <h3 data-i18n="trust.title">Confiança no cardápio</h3>
+    <p data-i18n="trust.desc">Cards com informação clara de prato, preço, tempo, entrega e localização no mapa.</p>
+    <div class="impact-big">Allve</div>
+    <p data-i18n="trust.focus">Experiência focada em mostrar somente locais com 2+ pratos veganos, vegetarianos ou opções claramente adaptáveis.</p>
+  </div>
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <h2 class="how-title" data-i18n="how.title">Como funciona</h2>
+    <p class="how-sub" data-i18n="how.sub">Encontrar comida vegana e vegetariana nunca foi tão simples.</p>
+    <div class="how-steps">
+      <div class="how-step"><div class="how-step-icon">🔍</div><h3 data-i18n="how.step1.title">Explore</h3><p data-i18n="how.step1.desc">Navegue por restaurantes, docerias e deliveries com opções veganas ou vegetarianas.</p></div>
+      <div class="how-step"><div class="how-step-icon">🛒</div><h3 data-i18n="how.step2.title">Peça</h3><p data-i18n="how.step2.desc">Adicione seus pratos ao carrinho e finalize em segundos.</p></div>
+      <div class="how-step"><div class="how-step-icon">🛵</div><h3 data-i18n="how.step3.title">Rastreie</h3><p data-i18n="how.step3.desc">Acompanhe seu pedido em tempo real até a sua porta.</p></div>
+      <div class="how-step"><div class="how-step-icon">🌿</div><h3 data-i18n="how.step4.title">Aproveite</h3><p data-i18n="how.step4.desc">Coma bem e cuide do planeta. Cada pedido planta uma muda.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MAP SECTION — FUNCTIONAL
+═══════════════════════════════════════ -->
+<section class="map-section" id="map">
+  <div class="map-section-header">
+    <div>
+      <h2 class="map-section-title" data-i18n="map.title">Restaurantes em <span>Uberlândia</span></h2>
+      <p class="map-section-sub" data-i18n="map.sub">Clique em um marcador ou na lista para ver o cardápio</p>
+    </div>
+    <div class="map-controls-row">
+      <button class="map-ctrl-btn" id="btn-locate" onclick="locateUser()">
+        <svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+        <span data-i18n="map.locate">Perto de mim</span>
+      </button>
+      <button class="map-ctrl-btn active" id="btn-open-only" onclick="toggleOpenOnly(this)">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        <span data-i18n="map.openNow">Abertos agora</span>
+      </button>
+      <button class="map-ctrl-btn" id="btn-free-delivery" onclick="toggleFreeDelivery(this)">
+        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
+        <span data-i18n="map.freeDelivery">Entrega grátis</span>
+      </button>
+      <button class="map-ctrl-btn" id="btn-reset-map" onclick="resetMap()">
+        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        <span data-i18n="map.reset">Resetar</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="map-wrapper">
+    <!-- Sidebar list -->
+    <aside class="map-sidebar">
+      <div class="map-sidebar-head">
+        <div class="map-sidebar-search-wrap">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" class="map-sidebar-search" id="map-search" placeholder="Buscar no mapa..." oninput="filterMapList()" />
+        </div>
+        <div class="map-cat-chips" id="map-cat-chips">
+          <div class="map-chip active" data-cat="all" onclick="setMapCategory(this,'all')" data-i18n="cat.all">Todos</div>
+          <div class="map-chip" data-cat="burger" onclick="setMapCategory(this,'burger')">🍔</div>
+          <div class="map-chip" data-cat="pizza" onclick="setMapCategory(this,'pizza')">🍕</div>
+          <div class="map-chip" data-cat="bowl" onclick="setMapCategory(this,'bowl')">🥗</div>
+          <div class="map-chip" data-cat="japanese" onclick="setMapCategory(this,'japanese')">🍣</div>
+          <div class="map-chip" data-cat="dessert" onclick="setMapCategory(this,'dessert')">🍰</div>
+          <div class="map-chip" data-cat="juice" onclick="setMapCategory(this,'juice')">🧃</div>
+        </div>
+      </div>
+      <div class="map-list" id="map-list"></div>
+    </aside>
+
+    <!-- Map canvas -->
+    <div class="map-canvas-wrap">
+      <div id="delivery-map"></div>
+      <!-- Stats overlay -->
+      <div class="map-stats-bar" id="map-stats-bar">
+        <div class="map-stat">
+          <div class="map-stat-num" id="map-stat-visible">8</div>
+          <div class="map-stat-label" data-i18n="map.visible">Visíveis</div>
+        </div>
+        <div class="map-stat">
+          <div class="map-stat-num" id="map-stat-open" style="color:var(--green)">6</div>
+          <div class="map-stat-label" data-i18n="map.open">Abertos</div>
+        </div>
+        <div class="map-stat">
+          <div class="map-stat-num" id="map-stat-free">3</div>
+          <div class="map-stat-label" data-i18n="map.free">Grátis</div>
+        </div>
+      </div>
+      <div class="map-legend-card">
+        <div class="map-legend-title" data-i18n="map.legendTitle">Mapa melhorado</div>
+        <div class="map-legend-row"><span class="map-legend-dot open"></span><span data-i18n="map.legendOpen">Aberto agora</span></div>
+        <div class="map-legend-row"><span class="map-legend-dot closed"></span><span data-i18n="map.legendClosed">Fechado</span></div>
+        <div class="map-legend-row"><span class="map-legend-dot selected"></span><span data-i18n="map.legendSelected">Selecionado</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <svg class="logo-leaf" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2 5-4 12-2 12-2S19 6 17 8Z"/></svg>
+          Allve
+        </div>
+        <p data-i18n="footer.desc">Conectando você aos melhores sabores veganos e vegetarianos de Uberlândia, com 2+ opções por local e mapa inteligente.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.links">Links</h4>
+        <a href="#home" data-i18n="nav.home">Início</a>
+        <a href="#restaurants" data-i18n="nav.restaurants">Restaurantes</a>
+        <a href="#discover" data-i18n="footer.discover">Descobrir</a>
+        <a href="#impact" data-i18n="footer.impact">Impacto</a>
+        <a href="#map" data-i18n="nav.map">Mapa</a>
+        <a href="#how" data-i18n="nav.how">Como funciona</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.account">Conta</h4>
+        <a href="#" onclick="openAuth('login')" data-i18n="nav.login">Entrar</a>
+        <a href="#" onclick="openAuth('register')" data-i18n="nav.signup">Cadastrar</a>
+        <a href="#" onclick="openSettings()" data-i18n="footer.settings">Configurações</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.contact">Contato</h4>
+        <a href="mailto:allve@gmail.com">Allve@gmail.com</a>
+        <a href="tel:+5534997343985">(34) 99734-3985</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copy">© 2025 Allve. Todos os direitos reservados.</span>
+      <div class="social-links">
+        <a href="#" class="social-btn" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+        <a href="#" class="social-btn" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ORDER TRACKING MODAL -->
+<div class="order-overlay" id="order-overlay" onclick="closeOrderIfBg(event)">
+  <div class="order-card">
+    <div class="order-head">
+      <h2><span data-i18n="order.confirmed">Pedido confirmado</span> 🌿</h2>
+      <p id="order-code">Allve #0000</p>
+    </div>
+    <div class="order-body">
+      <p style="color:var(--text-muted);font-size:.9rem" data-i18n="order.simulation">Simulação de acompanhamento para deixar o app com experiência completa de delivery.</p>
+      <div class="track-line">
+        <div class="track-step done"><div class="track-dot">✓</div><div><strong data-i18n="order.step1">Pedido recebido</strong><span data-i18n="order.step1Desc">O restaurante já recebeu seu pedido.</span></div></div>
+        <div class="track-step done"><div class="track-dot">✓</div><div><strong data-i18n="order.step2">Preparando</strong><span data-i18n="order.step2Desc">Seu prato veg está sendo preparado.</span></div></div>
+        <div class="track-step"><div class="track-dot">3</div><div><strong data-i18n="order.step3">Saiu para entrega</strong><span data-i18n="order.step3Desc">Em breve o entregador aparece no mapa.</span></div></div>
+        <div class="track-step"><div class="track-dot">4</div><div><strong data-i18n="order.step4">Entregue</strong><span data-i18n="order.step4Desc">Bom apetite!</span></div></div>
+      </div>
+      <button class="mini-action" onclick="closeOrder()" data-i18n="order.close">Fechar acompanhamento</button>
+    </div>
+  </div>
+</div>
+
+<nav class="floating-app-nav" aria-label="Navegação rápida">
+  <a href="#home">🏠<span data-i18n="nav.home">Início</span></a>
+  <a href="#restaurants">🍽️<span data-i18n="floating.food">Comida</span></a>
+  <a href="#discover">✨<span data-i18n="floating.guide">Guia</span></a>
+  <a href="#map">🗺️<span data-i18n="nav.map">Mapa</span></a>
+  <button onclick="openCart()">🛒<span data-i18n="cart.title">Carrinho</span></button>
+</nav>
+
+<!-- AUTH MODAL -->
+<div class="overlay" id="auth-overlay" onclick="closeAuthIfBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="auth-title" data-i18n="auth.welcome">Bem-vindo</h2>
+      <button class="modal-close" onclick="closeAuth()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="auth-tabs">
+        <div class="tab-bar">
+          <div class="tab active" id="tab-login" onclick="switchAuth('login')" data-i18n="nav.login">Entrar</div>
+          <div class="tab" id="tab-register" onclick="switchAuth('register')" data-i18n="nav.signup">Cadastrar</div>
+        </div>
+        <div class="form-panel active" id="fp-login">
+          <div class="field"><label data-i18n="form.email">E-mail</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="email" id="l-email" placeholder="seu@email.com" autocomplete="email"/></div><span class="field-err" id="l-email-err">E-mail inválido.</span></div>
+          <div class="field"><label data-i18n="form.password">Senha</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"/><button class="eye-btn" type="button" onclick="toggleEye('l-pass',this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button></div><span class="field-err" id="l-pass-err">E-mail ou senha incorretos.</span></div>
+          <button class="btn-submit" onclick="handleLogin()"><svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg><span data-i18n="nav.login">Entrar</span></button>
+          <div class="divider" data-i18n="form.or">ou</div>
+          <p class="text-center" style="font-size:.85rem;color:var(--text-muted)"><span data-i18n="form.noAccount">Não tem conta?</span> <button class="link-btn" onclick="switchAuth('register')" data-i18n="form.signupFree">Cadastre-se grátis</button></p>
+        </div>
+        <div class="form-panel" id="fp-register">
+          <div class="field-row"><div class="field"><label data-i18n="form.firstName">Nome</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><input type="text" id="r-name" placeholder="João"/></div><span class="field-err" id="r-name-err">Campo obrigatório.</span></div><div class="field"><label data-i18n="form.lastName">Sobrenome</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><input type="text" id="r-last" placeholder="Silva"/></div><span class="field-err" id="r-last-err">Campo obrigatório.</span></div></div>
+          <div class="field"><label data-i18n="form.email">E-mail</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="email" id="r-email" placeholder="seu@email.com"/></div><span class="field-err" id="r-email-err">E-mail inválido.</span></div>
+          <div class="field"><label data-i18n="form.phone">Telefone</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><input type="tel" id="r-phone" placeholder="(34) 99999-9999" maxlength="15"/></div><span class="field-err" id="r-phone-err">Telefone inválido.</span></div>
+          <div class="field"><label>CPF</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25S13.24 11.25 12 11.25 9.75 10.24 9.75 9 10.76 6.75 12 6.75zM17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg><input type="text" id="r-cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"/><span class="cpf-status" id="cpf-st"></span></div><span class="field-err" id="r-cpf-err">CPF inválido.</span></div>
+          <div class="field"><label data-i18n="form.password">Senha</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg><input type="password" id="r-pass" placeholder="Mín. 6 caracteres"/><button class="eye-btn" type="button" onclick="toggleEye('r-pass',this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button></div><span class="field-err" id="r-pass-err">Mínimo 6 caracteres.</span></div>
+          <div class="field"><label data-i18n="form.confirmPassword">Confirmar Senha</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg><input type="password" id="r-pass2" placeholder="Repita a senha"/><button class="eye-btn" type="button" onclick="toggleEye('r-pass2',this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button></div><span class="field-err" id="r-pass2-err">As senhas não coincidem.</span></div>
+          <button class="btn-submit" onclick="handleRegister()"><svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i18n="form.createAccount">Criar Conta</span></button>
+          <div class="divider" data-i18n="form.or">ou</div>
+          <p class="text-center" style="font-size:.85rem;color:var(--text-muted)"><span data-i18n="form.hasAccount">Já tem conta?</span> <button class="link-btn" onclick="switchAuth('login')" data-i18n="nav.login">Entrar</button></p>
+        </div>
+      </div>
+      <div id="auth-logged" class="hidden">
+        <div class="logged-panel">
+          <div class="user-avatar" id="auth-avatar">J</div>
+          <p class="user-name" id="auth-name">João Silva</p>
+          <p class="user-email" id="auth-email">joao@email.com</p>
+          <div class="user-stats">
+            <div class="ustat"><strong id="stat-orders">0</strong><span data-i18n="stats.orders">Pedidos</span></div>
+            <div class="ustat"><strong>R$0</strong><span data-i18n="stats.spent">Gasto</span></div>
+            <div class="ustat"><strong id="stat-trees">🌱 0</strong><span data-i18n="stats.trees">Mudas</span></div>
+          </div>
+          <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:.75rem" onclick="closeAuth();openSettings()">Configurações</button>
+          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="logout()"><span data-i18n="auth.logout">Sair</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settings-overlay" onclick="closeSettingsIfBg(event)">
+  <div class="modal modal-wide">
+    <div class="modal-header"><h2 class="modal-title" data-i18n="settings.title">Configurações</h2><button class="modal-close" onclick="closeSettings()">✕</button></div>
+    <div class="modal-body">
+      <div class="settings-layout">
+        <nav class="settings-nav">
+          <button class="settings-tab active" onclick="setSettingsTab('profile',this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i18n="settings.profile">Perfil</span></button>
+          <button class="settings-tab" onclick="setSettingsTab('delivery',this)"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg><span data-i18n="settings.delivery">Entrega</span></button>
+          <button class="settings-tab" onclick="setSettingsTab('notifications',this)"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span data-i18n="settings.notifications">Notificações</span></button>
+          <button class="settings-tab" onclick="setSettingsTab('appearance',this)"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg><span data-i18n="settings.appearance">Aparência</span></button>
+          <button class="settings-tab" onclick="setSettingsTab('about',this)"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="settings.about">Sobre</span></button>
+        </nav>
+        <div class="settings-content">
+          <div class="settings-panel active" id="sp-profile">
+            <div class="settings-section"><h4 data-i18n="settings.profileInfo">Informações Pessoais</h4>
+              <div class="field-row"><div class="field"><label data-i18n="form.firstName">Nome</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><input type="text" id="s-name" placeholder="João"/></div></div><div class="field"><label data-i18n="form.lastName">Sobrenome</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><input type="text" id="s-last" placeholder="Silva"/></div></div></div>
+              <div class="field"><label data-i18n="form.email">E-mail</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="email" id="s-email" placeholder="seu@email.com"/></div></div>
+              <div class="field"><label data-i18n="form.phone">Telefone</label><div class="input-wrap"><svg class="fi" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><input type="tel" id="s-phone" placeholder="(34) 99999-9999"/></div></div>
+              <button class="btn-submit" style="max-width:200px" onclick="saveProfile()"><svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg><span data-i18n="settings.save">Salvar</span></button>
+            </div>
+          </div>
+          <div class="settings-panel" id="sp-delivery">
+            <div class="settings-section"><h4 data-i18n="settings.addresses">Endereços</h4><div class="address-card"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><div class="address-card-body"><strong data-i18n="settings.home">Casa</strong><p>Rua das Flores, 123 – Uberlândia, MG</p></div></div><button class="btn-add-addr" data-i18n="settings.addAddress">+ Adicionar novo endereço</button></div>
+          </div>
+          <div class="settings-panel" id="sp-notifications">
+            <div class="settings-section"><h4 data-i18n="settings.pushNotif">Notificações Push</h4>
+              <div class="toggle-row"><div><div class="toggle-label" data-i18n="settings.orderUpdates">Atualizações de pedido</div><div class="toggle-desc" data-i18n="settings.orderUpdatesDesc">Confirmação, preparo e entrega</div></div><label class="toggle"><input type="checkbox" checked id="notif-orders"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div><div class="toggle-label" data-i18n="settings.promotions">Promoções</div></div><label class="toggle"><input type="checkbox" id="notif-promo"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <div class="settings-panel" id="sp-appearance">
+            <div class="settings-section"><h4 data-i18n="settings.themeColor">Cor do tema</h4><div class="color-options"><div class="color-swatch active" style="background:#16a34a" onclick="setThemeColor('#16a34a','#0a3d1f',this)"></div><div class="color-swatch" style="background:#0ea5e9" onclick="setThemeColor('#0ea5e9','#0c4a6e',this)"></div><div class="color-swatch" style="background:#8b5cf6" onclick="setThemeColor('#8b5cf6','#4c1d95',this)"></div><div class="color-swatch" style="background:#f97316" onclick="setThemeColor('#f97316','#7c2d12',this)"></div><div class="color-swatch" style="background:#ec4899" onclick="setThemeColor('#ec4899','#831843',this)"></div></div></div>
+            <div class="settings-section"><h4 data-i18n="settings.language">Idioma</h4><div style="display:flex;gap:.75rem"><button class="btn btn-primary" id="s-lang-pt" onclick="setLang('pt')">🇧🇷 Português</button><button class="btn btn-outline" id="s-lang-en" style="opacity:.5" onclick="setLang('en')">🇺🇸 English</button></div></div>
+          </div>
+          <div class="settings-panel" id="sp-about">
+            <div class="settings-section">
+              <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem"><div style="width:64px;height:64px;background:linear-gradient(135deg,var(--forest),var(--green));border-radius:18px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2 5-4 12-2 12-2S19 6 17 8Z"/></svg></div><div><div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:800">Allve</div><div style="font-size:.82rem;color:var(--text-muted)" data-i18n="about.version">Versão 1.0.0 · 2025</div></div></div>
+              <p style="font-size:.88rem;color:var(--text-muted);line-height:1.7" data-i18n="about.desc">O Allve conecta você a restaurantes, docerias e deliveries com opções veganas e vegetarianas em Uberlândia.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MENU MODAL -->
+<div class="overlay" id="menu-overlay" onclick="closeMenuIfBg(event)">
+  <div class="modal menu-modal">
+    <div class="modal-header"><h2 class="modal-title" id="menu-title">Cardápio</h2><button class="modal-close" onclick="closeMenu()">✕</button></div>
+    <div class="modal-body" id="menu-body"></div>
+  </div>
+</div>
+
+
+<!-- RESTAURANT DETAIL MODAL -->
+<div class="overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
+  <div class="modal restaurant-detail-modal">
+    <div class="modal-header"><h2 class="modal-title" id="detail-title">Detalhes</h2><button class="modal-close" onclick="closeRestaurantDetails()">✕</button></div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCartIfBg(event)">
+  <aside class="cart-sidebar">
+    <div class="cart-header"><h2 class="cart-title" data-i18n="cart.title">Carrinho</h2><button class="modal-close" onclick="closeCart()">✕</button></div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty" id="cart-empty"><svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25.03-.12.9-1.63H17c.75 0 1.41-.41 1.75-1.03L21.7 6.96A1 1 0 0 0 21 5.5H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.97 5.48 17 6.75 17H19v-2H7.42c-.14 0-.25-.11-.25-.25z"/></svg><p data-i18n="cart.empty">Seu carrinho está vazio</p></div>
+      <div id="cart-items"></div>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-total-row"><span data-i18n="cart.subtotal">Subtotal</span><span id="cart-subtotal">R$ 0,00</span></div>
+      <div class="cart-total-row"><span data-i18n="cart.delivery">Entrega</span><span id="cart-delivery">R$ 5,00</span></div>
+      <div class="cart-total-row grand"><span data-i18n="cart.total">Total</span><span id="cart-total">R$ 0,00</span></div>
+      <button class="btn-checkout" onclick="checkout()" data-i18n="cart.checkout">Finalizar pedido</button>
+    </div>
+  </aside>
+</div>
+
+<div id="toast-el"></div>
+  <script src="script.js"></script>
+
+<!-- BARRA RÁPIDA MOBILE -->
+<div class="mobile-quickbar" aria-label="Navegação rápida">
+  <button onclick="scrollToSection('restaurants')">🍽️ <span data-i18n="quickbar.list">Lista</span></button>
+  <button onclick="scrollToSection('map')">🗺️ <span data-i18n="quickbar.map">Mapa</span></button>
+  <button onclick="scrollToSection('discover')">✨ <span data-i18n="quickbar.discover">Descobrir</span></button>
+  <button onclick="scrollToSection('home')">⬆️ <span data-i18n="quickbar.top">Topo</span></button>
+</div>
+
+</body>
+</html>
